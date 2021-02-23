@@ -17,7 +17,6 @@ class Main : JavaPlugin() {
         val balanceMap: MutableMap<Player, Int> = mutableMapOf()
     }
 
-
     override fun onEnable() {
         logger.log(Level.INFO, name)
 

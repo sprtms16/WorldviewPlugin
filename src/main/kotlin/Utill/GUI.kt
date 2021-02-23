@@ -1,37 +1,22 @@
 package Utill
 
-import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.inventory.ItemFlag
-import org.bukkit.event.inventory.InventoryCloseEvent
-import Utill.GUI
-import java.util.HashMap
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 abstract class GUI protected constructor(p: Player, name: String?, size: Int) {
-    private val inv: Inventory
+    private val inv: Inventory = Bukkit.createInventory(null, size, name!!)
     private var slotMap: MutableMap<Int, String?>?
     protected abstract fun init()
     abstract fun onClick(e: InventoryClickEvent)
 
-    //    protected void setItem(String name, List<String> lore, Material m, short data, int amount, int slot, String value, boolean glow) {
-    //        ItemStack item = new ItemStack(m, amount, data);
-    //        ItemMeta meta = item.getItemMeta();
-    //        meta.setDisplayName(name);
-    //        if (lore != null) meta.setLore(lore);
-    //        if (glow) {
-    //            meta.addEnchant(Enchantment.LURE, 1, false);
-    //            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    //        }
-    //        item.setItemMeta(meta);
-    //        slotMap.put(slot, value);
-    //        inv.setItem(slot, item);
-    //    }
     protected fun setItem(
         name: String?,
         lore: List<String?>?,
@@ -87,7 +72,6 @@ abstract class GUI protected constructor(p: Player, name: String?, size: Int) {
     }
 
     init {
-        inv = Bukkit.createInventory(null, size, name!!)
         slotMap = HashMap()
         init()
         p.openInventory(inv)

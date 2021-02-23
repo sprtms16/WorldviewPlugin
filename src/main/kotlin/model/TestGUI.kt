@@ -2,12 +2,9 @@ package model
 
 import Utill.GUI
 import main.Main
-import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.craftbukkit.libs.jline.internal.Log
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import java.util.logging.Level
 
 class TestGUI(p: Player) : GUI(p, "test", 9) {
     private val player: Player = p
