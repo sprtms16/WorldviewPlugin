@@ -18,24 +18,24 @@ abstract class GUI protected constructor(p: Player, name: String?, size: Int) {
     abstract fun onClick(e: InventoryClickEvent)
 
     protected fun setItem(
-        name: String?,
-        lore: List<String?>?,
-        m: Material?,
-        amount: Int,
-        slot: Int,
-        value: String?,
-        glow: Boolean
+            name: String?,
+            lore: List<String?>?,
+            m: Material?,
+            amount: Int,
+            slot: Int,
+            value: String?,
+            glow: Boolean
     ) {
-        val item = ItemStack(m!!, amount)
+        val item = ItemStack(m ?: Material.AIR, amount)
         val meta = item.itemMeta
-        meta!!.setDisplayName(name)
-        if (lore != null) meta.lore = lore
+        meta?.setDisplayName(name)
+        if (lore != null) meta?.lore = lore
         if (glow) {
-            meta.addEnchant(Enchantment.LURE, 1, false)
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            meta?.addEnchant(Enchantment.LURE, 1, false)
+            meta?.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         }
         item.itemMeta = meta
-        slotMap!![slot] = value
+        slotMap?.set(slot, value)
         inv.setItem(slot, item)
     }
 

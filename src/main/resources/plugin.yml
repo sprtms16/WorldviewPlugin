@@ -1,3 +1,7 @@
 main: main.Main
 version: 1.0
 name: WoldviewPlugin
+commands:
+  check:
+    usage: /check
+    aliases: publish, Confirm, reset
