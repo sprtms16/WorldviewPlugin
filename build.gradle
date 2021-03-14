@@ -7,18 +7,21 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url "https://maven.elmakers.com/repository" }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 }
 
 jar {
     destinationDir new File("D:/1.16.5 server/plugins")
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
-        attributes (
+        attributes(
                 'Main-Class': 'MainfileKt'
         )
     }
