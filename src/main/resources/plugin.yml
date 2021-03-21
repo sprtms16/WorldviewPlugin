@@ -6,9 +6,9 @@ commands:
   check:
     usage: /check
     aliases: publish, Confirm, reset
-  test-economy:
-    usage: /test-economy
-    aliases: test-economy
-  test-permission:
-    usage: /test-permission
-    aliases: test-permission
+#  test-economy:
+#    usage: /test-economy
+#    aliases: test-economy
+#  test-permission:
+#    usage: /test-permission
+#    aliases: test-permission

@@ -1,20 +1,14 @@
-package model
+package viewmodel.commandExecutor
 
-import main.Main
+import model.PlayerEconomy
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.java.JavaPlugin
 
-class TestCommandExecutor(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
-    private val plugin: JavaPlugin = plugin
+class EconomyCommandExecutor(private val economy: PlayerEconomy?) : CommandExecutor, TabCompleter {
 
 
     override fun onCommand(commandSender: CommandSender,
@@ -32,26 +26,25 @@ class TestCommandExecutor(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
                     "confirm" -> {
                         if (target != null) {
                             if (player.isOp) {
-                                player.sendMessage(target.displayName + "의 돈은 " + (Main.balanceMap[target]
-                                        ?: 0) + "원 입니다.")
+                                player.sendMessage(target.displayName + "의 돈은 " + economy?.getBalance(target) + "원 입니다.")
                             } else {
                                 player.sendMessage("권한이 부족합니다.")
                             }
 
                         } else {
-                            player.sendMessage("당신의 돈은 " + (Main.balanceMap[player] ?: 0) + "원 입니다.")
+                            player.sendMessage("당신의 돈은 " + economy?.getBalance(player) + "원 입니다.")
                         }
                     }
                     "publish" -> {
                         if (target != null) {
                             if (player.isOp) {
-                                checkGeneration(target, 10000)
+                                economy?.checkGeneration(target, 10000.0)
                                 player.sendMessage(target.displayName + "에게 10000원을 발급하였습니다.")
                                 target.sendMessage(player.displayName + "가 당신에게 10000원을 지급하였습니다.")
                             } else {
-                                if (Main.balanceMap[player] ?: 0 >= 10000) {
-                                    Main.balanceMap[player] = Main.balanceMap[player]?.minus(10000) ?: 0
-                                    checkGeneration(target, 10000)
+                                if (economy?.checkBalance(player, 10000.0) == true) {
+                                    economy.subtraction(player, 10000.0)
+                                    economy.checkGeneration(target, 10000.0)
                                     player.sendMessage(target.displayName + "에게 10000원을 발급하였습니다.")
                                     target.sendMessage(player.displayName + "가 당신에게 10000원을 지급하였습니다.")
                                 } else {
@@ -59,43 +52,27 @@ class TestCommandExecutor(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
                                 }
                             }
                         } else {
-                            if (Main.balanceMap[player] ?: 0 >= 10000 || player.isOp) {
+                            if (economy?.checkBalance(player, 10000.0) == true || player.isOp) {
                                 if (!player.isOp) {
-                                    Main.balanceMap[player] = Main.balanceMap[player]?.minus(10000) ?: 0
+                                    economy?.subtraction(player, 10000.0)
                                 }
-                                checkGeneration(player, 10000)
-                                player.sendMessage("당신의 돈은 " + (Main.balanceMap[player] ?: 0) + "원 입니다.")
+                                economy?.checkGeneration(player, 10000.0)
+                                player.sendMessage("당신의 돈은 " + economy?.getBalance(player) + "원 입니다.")
                             } else {
                                 player.sendMessage("잔액이 부족합니다.")
-                                player.sendMessage("당신의 돈은 " + (Main.balanceMap[player] ?: 0) + "원 입니다.")
+                                player.sendMessage("당신의 돈은 " + economy?.getBalance(player) + "원 입니다.")
                             }
-                        }
-
-                    }
-                    "reset" -> {
-                        if (target != null) {
-                            if (player.isOp) {
-                                Main.balanceMap[target] = 0
-                                player.sendMessage(target.displayName + "의 돈은 " + (Main.balanceMap[target]
-                                        ?: 0) + "원 입니다.")
-                            } else {
-                                player.sendMessage("권한이 부족합니다.")
-                            }
-                        } else {
-                            Main.balanceMap[player] = 0
-                            player.sendMessage("당신의 돈은 " + (Main.balanceMap[player] ?: 0) + "원 입니다.")
                         }
 
                     }
                     "produce" -> {
                         if (player.isOp) {
                             if (target != null) {
-                                Main.balanceMap[target] = Main.balanceMap[target]?.plus(10000) ?: 10000
-                                player.sendMessage(target.displayName + "의 돈은 " + (Main.balanceMap[target]
-                                        ?: 0) + "원 입니다.")
+                                economy?.add(target, 10000.0)
+                                player.sendMessage(target.displayName + "의 돈은 " + economy?.getBalance(target) + "원 입니다.")
                             } else {
-                                Main.balanceMap[player] = Main.balanceMap[player]?.plus(10000) ?: 10000
-                                player.sendMessage("당신의 돈은 " + (Main.balanceMap[player] ?: 0) + "원 입니다.")
+                                economy?.add(player, 10000.0)
+                                player.sendMessage("당신의 돈은 " + economy?.getBalance(player) + "원 입니다.")
                             }
                         } else {
                             player.sendMessage("당신은 오피가 아닙니다.")
@@ -113,16 +90,7 @@ class TestCommandExecutor(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
         return false
     }
 
-    fun checkGeneration(player: Player, amount: Int) {
-        val paper = ItemStack(Material.PAPER)
-        val meta = paper.itemMeta
-        meta?.setDisplayName(amount.toString() + "수표")
-        meta?.lore = arrayListOf(amount.toString())
-        meta?.addEnchant(Enchantment.LURE, 1, false)
-        meta?.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-        paper.itemMeta = meta
-        player.inventory.addItem(paper)
-    }
+
 
     override fun onTabComplete(commandSender: CommandSender,
                                command: Command, label: String,
@@ -143,9 +111,9 @@ class TestCommandExecutor(plugin: JavaPlugin) : CommandExecutor, TabCompleter {
                 }
                 return result
             } else if (args[0] != "confirm"
-                    && args[0] != "publish"
-                    && args[0] != "reset"
-                    && args[0] != "produce" && args.size == 2) {
+                && args[0] != "publish"
+                && args[0] != "reset"
+                && args[0] != "produce" && args.size == 2) {
                 var result: MutableList<String> = mutableListOf()
                 result.add("confirm")
                 result.add("publish")
